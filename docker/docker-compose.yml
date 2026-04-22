@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: forexbot-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: forex_bot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: forexbot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: forexbot
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - TIMESCALEDB_HOST=postgres
+      - TIMESCALEDB_PORT=5432
+      - TIMESCALEDB_DB=forex_bot
+      - TIMESCALEDB_USER=postgres
+      - TIMESCALEDB_PASSWORD=postgres
+      - REDIS_URL=redis://redis:6379/0
+      - USE_REDIS=True
+      - TOTAL_CAPITAL=200
+      - MAX_AGENTS=5
+      - RISK_BASE=0.01
+      - DYNAMIC_RISK=True
+      - MAX_RISK=0.02
+      - MIN_RISK=0.005
+      - TRADING_START=7
+      - TRADING_END=22
+      - MAX_CONSECUTIVE_LOSSES=3
+      - ENABLE_NOISE_FILTER=True
+      - BROKER_MODE=demo
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    restart: unless-stopped
+    command: python -m src.main --mode demo --symbols EURUSD GBPUSD XAUUSD
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: forexbot-dashboard
+    depends_on:
+      - bot
+    ports:
+      - "8501:8501"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    command: streamlit run src/dashboard/app.py --server.port=8501 --server.address=0.0.0.0
+
+volumes:
+  postgres_data:
+  redis_data:

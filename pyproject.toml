@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forex_bot_exness"
+version = "1.0.0"
+description = "Forex trading bot for Exness with $200 demo, multi-agent, dynamic risk, and learning"
+requires-python = ">=3.11"
+dependencies = [
+    "metatrader5>=5.0.4397",
+    "redis>=5.0.0",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "ta>=0.10.0",
+    "scikit-learn>=1.3.0",
+    "psycopg2-binary>=2.9.0",
+    "sqlalchemy>=2.0.0",
+    "requests>=2.31.0",
+    "streamlit>=1.28.0",
+    "typing-extensions>=4.9.0",
+    "pydantic>=2.5.0",
+    "websocket-client>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.21", "black>=23.0", "isort>=5.12", "mypy>=1.5"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
