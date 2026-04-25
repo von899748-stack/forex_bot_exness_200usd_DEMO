@@ -20,10 +20,10 @@ class DatabaseConfig:
 
 
 @dataclass
-class RedisConfig:
-    """Redis configuration"""
-    url: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    enabled: bool = os.getenv("USE_REDIS", "False").lower() == "true"
+class RabbitMQConfig:
+    """RabbitMQ configuration"""
+    url: str = os.getenv("RABBITMQ_URL", "amqp://localhost:5672/")
+    enabled: bool = os.getenv("USE_RABBITMQ", "False").lower() == "true"
 
 
 @dataclass
@@ -124,7 +124,7 @@ class BaseConfig:
     """Base configuration shared by all modes"""
     # Sub-configs
     database: DatabaseConfig = field(default_factory=DatabaseConfig)
-    redis: RedisConfig = field(default_factory=RedisConfig)
+    rabbitmq: RabbitMQConfig = field(default_factory=RabbitMQConfig)
     mt5: MT5Config = field(default_factory=MT5Config)
     telegram: TelegramConfig = field(default_factory=TelegramConfig)
     risk: RiskConfig = field(default_factory=RiskConfig)
