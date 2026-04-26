@@ -20,7 +20,7 @@ if [ -d "venv" ]; then
 fi
 
 python -c "import MetaTrader5; print('MT5: OK')" 2>/dev/null || echo "MT5: Not installed"
-python -c "import redis; print('Redis: OK')" 2>/dev/null || echo "Redis: Not installed"
+python -c "import pika; print('RabbitMQ: OK')" 2>/dev/null || echo "RabbitMQ: Not installed"
 python -c "import psycopg2; print('PostgreSQL: OK')" 2>/dev/null || echo "PostgreSQL: Not installed"
 
 echo ""

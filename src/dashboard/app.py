@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from datetime import datetime, timedelta
 
-from ...core.redis_client import RedisClient
+from ...core.rabbitmq_client import RabbitMQClient
 from ...notifications.reports import ReportGenerator
 from ...agents.registry import AgentRegistry
 from ...config.base import BaseConfig
@@ -55,7 +55,7 @@ def main():
         st.subheader("Recent Trades")
         trades_table = st.empty()
 
-    # Simulate data (would connect to Redis/DB)
+    # Simulate data (would connect to RabbitMQ/DB)
     render_demo_content(chart_placeholder, agent_table, trades_table, status_placeholder)
 
 

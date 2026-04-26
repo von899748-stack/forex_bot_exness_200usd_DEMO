@@ -8,10 +8,10 @@ from pika.channel import Channel
 from ..config.base import BaseConfig
 
 
-class RedisClient:
+class RabbitMQClient:
     """Message queue client using RabbitMQ for pub/sub"""
 
-    _instance: Optional["RedisClient"] = None
+    _instance: Optional["RabbitMQClient"] = None
     _lock = threading.Lock()
 
     def __new__(cls, config: Optional[BaseConfig] = None):

@@ -88,4 +88,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
-| 2026-04-25 | Converted Redis client to RabbitMQ for pub/sub; updated dependencies and config |
+| 2026-04-25 | Converted Redis to RabbitMQ: renamed files, dependencies, config, and all references |

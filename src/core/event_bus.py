@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum
 import uuid
 
-from .redis_client import RedisClient
+from .rabbitmq_client import RabbitMQClient
 
 
 class EventType(str, Enum):
@@ -62,14 +62,14 @@ class Event:
 class EventBus:
     """Event bus for pub/sub communication"""
 
-    def __init__(self, redis_client: Optional[RedisClient] = None):
-        self.redis_client = redis_client or RedisClient()
-        self.enabled = self.redis_client.enabled
+    def __init__(self, mq_client: Optional[RabbitMQClient] = None):
+        self.mq_client = mq_client or RabbitMQClient()
+        self.enabled = self.mq_client.enabled
         self._local_subscribers: Dict[EventType, List[Callable]] = {}
         self._lock = threading.RLock()
 
     def publish(self, event: Event):
-        """Publish event to Redis and local subscribers"""
+        """Publish event to RabbitMQ and local subscribers"""
         # Notify local subscribers
         with self._lock:
             callbacks = self._local_subscribers.get(event.type, []).copy()
@@ -80,9 +80,9 @@ class EventBus:
             except Exception:
                 pass
 
-        # Publish to Redis if enabled
+        # Publish to RabbitMQ if enabled
         if self.enabled:
-            self.redis_client.publish(f"events:{event.type}", event.to_dict())
+            self.mq_client.publish(f"events:{event.type}", event.to_dict())
 
     def subscribe(self, event_type: EventType, callback: Callable[[Event], None]):
         """Subscribe to event type"""
@@ -91,9 +91,9 @@ class EventBus:
                 self._local_subscribers[event_type] = []
             self._local_subscribers[event_type].append(callback)
 
-        # Also subscribe to Redis if enabled
+        # Also subscribe to RabbitMQ if enabled
         if self.enabled:
-            def redis_callback(data):
+            def on_message(data):
                 try:
                     event = Event(
                         id=data.get("id", str(uuid.uuid4())),
@@ -106,7 +106,7 @@ class EventBus:
                 except Exception:
                     pass
 
-            self.redis_client.subscribe(f"events:{event_type}", redis_callback)
+            self.mq_client.subscribe(f"events:{event_type}", on_message)
 
     def unsubscribe(self, event_type: EventType, callback: Callable):
         """Unsubscribe from event"""
