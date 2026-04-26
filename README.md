@@ -10,7 +10,7 @@ Multi-agent forex trading bot for Exness demo account with dynamic risk manageme
 - **Noise Filtering** - Filters out losing trades caused by spread spikes, slippage, or market noise
 - **Concept Drift Detection** - Detects market regime changes and resets learning
 - **Self-Correction Learning** - Learns from filtered losses to improve future decisions
-- **Redis Support** - Optional real-time state sharing and event bus
+- **RabbitMQ Support** - Optional real-time state sharing and event bus
 - **Telegram Notifications** - Real-time trade alerts and bot status
 - **Streamlit Dashboard** - Visualize performance, agent states, and trades
 - **Backtesting Engine** - Test strategies on historical data
@@ -92,7 +92,7 @@ Edit `.env` or config files in `src/config/`:
 - `TRADING_END=22` - Trading ends at 10 PM UTC
 - `MAX_CONSECUTIVE_LOSSES=3` - Stop after 3 consecutive losses
 - `ENABLE_NOISE_FILTER=True` - Filter losing trades from noise
-- `USE_REDIS=False` - Enable Redis for real-time updates
+- `USE_RABBITMQ=False` - Enable RabbitMQ for real-time updates
 
 ## Risk Management
 
@@ -141,7 +141,7 @@ bash scripts/deploy_monitor.sh
 ## Docker Deployment
 
 ```bash
-# Start all services (PostgreSQL, Redis, bot)
+# Start all services (PostgreSQL, RabbitMQ, bot)
 docker-compose up -d
 
 # View logs
@@ -182,7 +182,7 @@ Streamlit dashboard shows:
 - Python 3.11+
 - MetaTrader 5 (for live/demo trading)
 - TimescaleDB (PostgreSQL with timescale extension)
-- Redis (optional, for real-time features)
+- RabbitMQ (optional, for real-time features)
 - Exness Demo Account ($200)
 
 ## Support

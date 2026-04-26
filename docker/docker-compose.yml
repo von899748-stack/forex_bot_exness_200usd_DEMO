@@ -18,16 +18,16 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: forexbot-redis
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: forexbot-rabbitmq
     ports:
-      - "6379:6379"
+      - "5672:5672"
+      - "15672:15672"
     volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
+      - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,7 +40,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
+      rabbitmq:
         condition: service_healthy
     environment:
       - TIMESCALEDB_HOST=postgres
@@ -48,8 +48,8 @@ services:
       - TIMESCALEDB_DB=forex_bot
       - TIMESCALEDB_USER=postgres
       - TIMESCALEDB_PASSWORD=postgres
-      - REDIS_URL=redis://redis:6379/0
-      - USE_REDIS=True
+      - RABBITMQ_URL=amqp://rabbitmq:5672/
+      - USE_RABBITMQ=True
       - TOTAL_CAPITAL=200
       - MAX_AGENTS=5
       - RISK_BASE=0.01
@@ -78,7 +78,7 @@ services:
     ports:
       - "8501:8501"
     environment:
-      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://rabbitmq:5672/
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
@@ -86,4 +86,4 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
+  rabbitmq_data:

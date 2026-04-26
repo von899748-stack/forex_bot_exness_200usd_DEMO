@@ -6,6 +6,8 @@
 
 The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
 
+**Infrastructure**: RabbitMQ configured for event messaging (replaced Redis)
+
 ## Recently Completed
 
 - [x] Base Next.js 16 setup with App Router
